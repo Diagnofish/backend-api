@@ -20,7 +20,7 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type Detection struct {
+type FishDetection struct {
 	ID                int       `json:"id" gorm:"PrimaryKey"`
 	ImageLink         string    `json:"image_link" gorm:"type:varchar(255)"`
 	FishName          string    `json:"fish_name" gorm:"type:varchar(50)"`
@@ -32,7 +32,7 @@ type Detection struct {
 	PredictionClassID int       `json:"prediction_class_id"`
 }
 
-type PredictionClass struct {
+type DetectionClass struct {
 	ID          int    `json:"id" gorm:"PrimaryKey"`
 	Result      string `json:"result" gorm:"type:varchar(50)"`
 	StatusShown string `json:"status_shown" gorm:"type:varchar(50)"`
