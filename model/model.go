@@ -20,7 +20,7 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type Prediction struct {
+type Detection struct {
 	ID                int       `json:"id" gorm:"PrimaryKey"`
 	ImageLink         string    `json:"image_link" gorm:"type:varchar(255)"`
 	FishName          string    `json:"fish_name" gorm:"type:varchar(50)"`
@@ -45,6 +45,11 @@ type UserRegister struct {
 	Email          string `json:"email" binding:"required"`
 	Password       string `json:"password" binding:"required"`
 	RepeatPassword string `json:"repeat_password" binding:"required"`
+}
+
+type UserLogin struct {
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 type Credential struct {

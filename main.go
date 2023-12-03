@@ -62,8 +62,9 @@ func main() {
 
 func RunServer(db *gorm.DB, gin *gin.Engine) *gin.Engine {
 	userRepo := repo.NewUserRepo(db)
+	sessionRepo := repo.NewSessionRepo(db)
 
-	userService := service.NewUserService(userRepo)
+	userService := service.NewUserService(userRepo, sessionRepo)
 	detectionService := service.NewDetectionService
 
 	userAPIHandler := api.NewUserAPI(userService)
@@ -77,12 +78,12 @@ func RunServer(db *gorm.DB, gin *gin.Engine) *gin.Engine {
 	user := gin.Group("/user")
 	{
 		user.POST("/register", apiHandler.UserAPIHandler.Register)
-		// user.POST("/login", apiHandler.UserAPIHandler.Login)
+		user.POST("/login", apiHandler.UserAPIHandler.Login)
 	}
 
 	detection := gin.Group("/detection")
 	{
-		detection.POST("/predict", apiHandler.DetectionAPIHandler.Predict)
+		detection.GET("/predict", apiHandler.DetectionAPIHandler.Predict)
 	}
 
 	return gin
