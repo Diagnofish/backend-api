@@ -8,7 +8,7 @@ type Session struct {
 	ID     int       `json:"id" gorm:"primaryKey"`
 	Token  string    `json:"token"`
 	Email  string    `json:"email"`
-	Expriy time.Time `json:"expiry"`
+	Expiry time.Time `json:"expiry"`
 }
 
 type User struct {
@@ -21,15 +21,15 @@ type User struct {
 }
 
 type FishDetection struct {
-	ID        int       `json:"id" gorm:"PrimaryKey"`
-	ImageLink string    `json:"image_link" gorm:"type:varchar(255)"`
-	FishName  string    `json:"fish_name" gorm:"type:varchar(50)"`
-	IsSuccess bool      `json:"is_success"`
-	Result    string    `json:"result"`
-	Accuracy  float64   `json:"accuracy"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	UserID    int       `json:"user_id"`
+	ID            string    `json:"id" gorm:"PrimaryKey"`
+	ImageFilename string    `json:"image_link" gorm:"type:varchar(255)"`
+	FishName      string    `json:"fish_name" gorm:"type:varchar(50)"`
+	IsSuccess     bool      `json:"is_success"`
+	Result        string    `json:"result"`
+	Accuracy      float64   `json:"accuracy"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+	Email         string    `json:"email"`
 }
 
 type DetectionClass struct {
@@ -52,7 +52,9 @@ type UserLogin struct {
 	Password string `json:"password" binding:"required"`
 }
 
-type UserFile struct {
+type ImageData struct {
+	ID            string
+	Email         string
 	Filename      string
 	FileDirectory string
 }

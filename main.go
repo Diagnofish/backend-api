@@ -3,12 +3,12 @@ package main
 import (
 	"diagnofish/api"
 	"diagnofish/db"
+	"diagnofish/middleware"
 	"diagnofish/model"
 	repo "diagnofish/repository"
 	"diagnofish/service"
 
 	"fmt"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -22,17 +22,17 @@ type APIHandler struct {
 func main() {
 	gin.SetMode(gin.DebugMode)
 
-	router := gin.New()
+	router := gin.Default()
 	db := db.NewDB()
 
-	router.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
-		return fmt.Sprintf("[%s] \"%s %s %s\"\n",
-			param.TimeStamp.Format(time.RFC822),
-			param.Method,
-			param.Path,
-			param.ErrorMessage,
-		)
-	}))
+	// router.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
+	// 	return fmt.Sprintf("[%s] \"%s %s %s\"\n",
+	// 		param.TimeStamp.Format(time.RFC822),
+	// 		param.Method,
+	// 		param.Path,
+	// 		param.ErrorMessage,
+	// 	)
+	// }))
 	router.Use(gin.Recovery())
 
 	dbCredential := model.Credential{
@@ -49,7 +49,7 @@ func main() {
 		panic(err)
 	}
 
-	conn.AutoMigrate(&model.User{})
+	conn.AutoMigrate(&model.User{}, &model.FishDetection{}, &model.Session{})
 
 	router = RunServer(conn, router)
 
@@ -82,8 +82,8 @@ func RunServer(db *gorm.DB, gin *gin.Engine) *gin.Engine {
 		user.POST("/login", apiHandler.UserAPIHandler.Login)
 	}
 
-	// detection := gin.Group("/fish", middleware.Auth())
-	detection := gin.Group("/fish")
+	detection := gin.Group("/fish", middleware.Auth())
+	// detection := gin.Group("/fish")
 	{
 		detection.POST("/detection", apiHandler.FishAPIHandler.Detection)
 	}

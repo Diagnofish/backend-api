@@ -48,7 +48,7 @@ func (s *sessionRepo) UpdateSession(session model.Session) error {
 	if err := s.db.Model(&session).Where("email = ?", email).Updates(map[string]interface{}{
 		"token":  session.Token,
 		"email":  session.Email,
-		"expiry": session.Expriy,
+		"expiry": session.Expiry,
 	}).Error; err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func (s *sessionRepo) SessionAvailToken(token string) (model.Session, error) {
 }
 
 func (s *sessionRepo) TokenExpired(session model.Session) bool {
-	return session.Expriy.Before(time.Now())
+	return session.Expiry.Before(time.Now())
 }
 
 func (s *sessionRepo) TokenValidity(token string) (model.Session, error) {

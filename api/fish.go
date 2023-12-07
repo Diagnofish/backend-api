@@ -25,7 +25,11 @@ func NewFishAPI(fishService service.FishService) *fishAPI {
 }
 
 func (f *fishAPI) Detection(c *gin.Context) {
+	var fishDetection model.FishDetection
+
 	uuid := uuid.New()
+	id := uuid.String()[:8]
+	email, _ := c.Get("email")
 
 	file, err := c.FormFile("image")
 	if err != nil {
@@ -38,7 +42,7 @@ func (f *fishAPI) Detection(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, model.NewErrorResponse("failed to get directory"))
 	}
 
-	filename := fmt.Sprintf("%s%s", uuid.String()[:8], filepath.Ext(file.Filename))
+	filename := fmt.Sprintf("%s%s", id, filepath.Ext(file.Filename))
 	fileDirectory := filepath.Join(dir, "images", filename)
 
 	if err = c.SaveUploadedFile(file, fileDirectory); err != nil {
@@ -46,20 +50,31 @@ func (f *fishAPI) Detection(c *gin.Context) {
 		return
 	}
 
-	var userFile = model.UserFile{
+	var imageData = model.ImageData{
+		ID:            id,
+		Email:         fmt.Sprintf("%v", email),
 		Filename:      filename,
 		FileDirectory: fileDirectory,
 	}
 
-	if _, err = f.fishService.Detection(&userFile); err != nil {
+	fishDetection, err = f.fishService.Detection(&imageData)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.NewErrorResponse(err.Error()))
 		return
 	}
 
-	if err = f.fishService.StoreImage(&userFile); err != nil {
+	if err = f.fishService.StoreImage(&imageData, &fishDetection); err != nil {
 		c.JSON(http.StatusInternalServerError, model.NewErrorResponse(err.Error()))
 		return
 	}
+
+	// fmt.Println(resp.String())
+	// fmt.Println("respp")
+	// fmt.Println(respp)
+
+	// c.JSON(resp.StatusCode(), respp)
+
+	c.JSON(http.StatusOK, fishDetection)
 
 	// forwardImage(c, filename, fileDirectory)
 	// uploadToGCS(filename, fileDirectory)

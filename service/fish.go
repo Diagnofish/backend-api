@@ -10,8 +10,8 @@ import (
 )
 
 type FishService interface {
-	Detection(userFile *model.UserFile) (*model.FishDetection, error)
-	StoreImage(userFile *model.UserFile) error
+	Detection(imageData *model.ImageData) (model.FishDetection, error)
+	StoreImage(imageData *model.ImageData, fishDetection *model.FishDetection) error
 }
 
 type fishService struct {
@@ -22,26 +22,31 @@ func NewFishService(fishRepository repo.FishRepository) FishService {
 	return &fishService{fishRepository}
 }
 
-func (f *fishService) Detection(userFile *model.UserFile) (*model.FishDetection, error) {
+func (f *fishService) Detection(imageData *model.ImageData) (model.FishDetection, error) {
 	var fishDetection model.FishDetection
 
 	apiURL := "http://localhost:8000/detection"
 	client := resty.New()
 
 	// kirim file ke ML service
-	resp, err := client.R().SetFile("image", userFile.FileDirectory).Post(apiURL)
+	resp, err := client.R().SetFile("image", imageData.FileDirectory).Post(apiURL)
 	if err != nil {
-		return nil, err
+		return fishDetection, err
 	}
 
 	err = json.Unmarshal(resp.Body(), &fishDetection)
 	if err != nil {
-		return nil, err
+		return fishDetection, err
 	}
-	return &fishDetection, nil
+
+	fishDetection.ID = imageData.ID
+	fishDetection.ImageFilename = imageData.Filename
+	fishDetection.Email = imageData.Email
+
+	return fishDetection, nil
 }
 
-func (f *fishService) StoreImage(userFile *model.UserFile) error {
+func (f *fishService) StoreImage(imageData *model.ImageData, fishDetection *model.FishDetection) error {
 	// bucketName := "testing-capstone-environment"
 
 	// ctx := context.Background()
@@ -52,11 +57,11 @@ func (f *fishService) StoreImage(userFile *model.UserFile) error {
 	// }
 
 	// bucket := client.Bucket(bucketName)
-	// object := bucket.Object(userFile.Filename)
+	// object := bucket.Object(imageData.Filename)
 	// writer := object.NewWriter(ctx)
 	// defer writer.Close()
 
-	// file, err := os.Open(userFile.FileDirectory)
+	// file, err := os.Open(imageData.FileDirectory)
 	// if err != nil {
 	// 	// fmt.Printf("Failed to open file: %v", err)
 	// 	return err
@@ -69,7 +74,12 @@ func (f *fishService) StoreImage(userFile *model.UserFile) error {
 	// 	return err
 	// }
 
-	if err := os.Remove(userFile.FileDirectory); err != nil {
+	if err := os.Remove(imageData.FileDirectory); err != nil {
+		return err
+	}
+
+	err := f.fishRepository.Store(fishDetection)
+	if err != nil {
 		return err
 	}
 

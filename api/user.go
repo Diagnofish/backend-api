@@ -3,6 +3,7 @@ package api
 import (
 	"diagnofish/model"
 	"diagnofish/service"
+	"fmt"
 	"net/http"
 	"net/mail"
 	"time"
@@ -28,6 +29,7 @@ func (u *userAPI) Register(c *gin.Context) {
 	var user model.UserRegister
 
 	if err := c.BindJSON(&user); err != nil {
+		fmt.Println(err.Error())
 		c.JSON(http.StatusBadRequest, model.NewErrorResponse("invalid decode json"))
 		return
 	}
@@ -79,7 +81,7 @@ func (u *userAPI) Login(c *gin.Context) {
 	cookie := &http.Cookie{
 		Name:     "session_token",
 		Value:    *token,
-		Expires:  time.Now().Add(2 * time.Minute),
+		Expires:  time.Now().Add(200 * time.Minute),
 		Path:     "/",
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
