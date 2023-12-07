@@ -21,15 +21,15 @@ type User struct {
 }
 
 type FishDetection struct {
-	ID                int       `json:"id" gorm:"PrimaryKey"`
-	ImageLink         string    `json:"image_link" gorm:"type:varchar(255)"`
-	FishName          string    `json:"fish_name" gorm:"type:varchar(50)"`
-	IsSuccess         bool      `json:"is_success"`
-	Accuracy          float64   `json:"accuracy"`
-	CreatedAt         time.Time `json:"created_at"`
-	UpdatedAt         time.Time `json:"updated_at"`
-	UserID            int       `json:"user_id"`
-	PredictionClassID int       `json:"prediction_class_id"`
+	ID        int       `json:"id" gorm:"PrimaryKey"`
+	ImageLink string    `json:"image_link" gorm:"type:varchar(255)"`
+	FishName  string    `json:"fish_name" gorm:"type:varchar(50)"`
+	IsSuccess bool      `json:"is_success"`
+	Result    string    `json:"result"`
+	Accuracy  float64   `json:"accuracy"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	UserID    int       `json:"user_id"`
 }
 
 type DetectionClass struct {
@@ -50,6 +50,17 @@ type UserRegister struct {
 type UserLogin struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
+}
+
+type UserFile struct {
+	Filename      string
+	FileDirectory string
+}
+
+type Respp struct {
+	IsSuccess         bool    `json:"is_success"`
+	Accuracy          float32 `json:"accuracy"`
+	PredictionClassId int     `json:"prediction_class_id"`
 }
 
 type Credential struct {
