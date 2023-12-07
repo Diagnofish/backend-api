@@ -41,7 +41,7 @@ func (f *fishService) Detection(imageData *model.ImageData) (model.FishDetection
 
 	fishDetection.ID = imageData.ID
 	fishDetection.ImageFilename = imageData.Filename
-	fishDetection.Email = imageData.Email
+	fishDetection.Email = imageData.FileOwner
 
 	return fishDetection, nil
 }

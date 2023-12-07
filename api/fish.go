@@ -52,7 +52,7 @@ func (f *fishAPI) Detection(c *gin.Context) {
 
 	var imageData = model.ImageData{
 		ID:            id,
-		Email:         fmt.Sprintf("%v", email),
+		FileOwner:     fmt.Sprintf("%v", email),
 		Filename:      filename,
 		FileDirectory: fileDirectory,
 	}
@@ -68,24 +68,5 @@ func (f *fishAPI) Detection(c *gin.Context) {
 		return
 	}
 
-	// fmt.Println(resp.String())
-	// fmt.Println("respp")
-	// fmt.Println(respp)
-
-	// c.JSON(resp.StatusCode(), respp)
-
 	c.JSON(http.StatusOK, fishDetection)
-
-	// forwardImage(c, filename, fileDirectory)
-	// uploadToGCS(filename, fileDirectory)
-
-	// upload image
-
-	// meneruskan ke ML
-	// upload ke bucket
-	// mendapat response dari ML
-
-	// insert ke database
-	// tulis response ke client
-	// delete local image
 }

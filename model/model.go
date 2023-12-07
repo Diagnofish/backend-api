@@ -54,15 +54,9 @@ type UserLogin struct {
 
 type ImageData struct {
 	ID            string
-	Email         string
 	Filename      string
 	FileDirectory string
-}
-
-type Respp struct {
-	IsSuccess         bool    `json:"is_success"`
-	Accuracy          float32 `json:"accuracy"`
-	PredictionClassId int     `json:"prediction_class_id"`
+	FileOwner     string
 }
 
 type Credential struct {
