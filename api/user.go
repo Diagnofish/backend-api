@@ -6,15 +6,18 @@ import (
 	"fmt"
 	"net/http"
 	"net/mail"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 )
 
 type UserAPI interface {
 	Register(c *gin.Context)
 	Login(c *gin.Context)
+	Logout(c *gin.Context)
 }
 
 type userAPI struct {
@@ -27,6 +30,9 @@ func NewUserAPI(userService service.UserService) *userAPI {
 
 func (u *userAPI) Register(c *gin.Context) {
 	var user model.UserRegister
+
+	uuid := uuid.New()
+	id := strings.ReplaceAll(uuid.String()[:16], "-", "")
 
 	if err := c.BindJSON(&user); err != nil {
 		fmt.Println(err.Error())
@@ -46,6 +52,7 @@ func (u *userAPI) Register(c *gin.Context) {
 	}
 
 	var recordUser = model.User{
+		ID:       id,
 		Email:    user.Email,
 		Password: user.Password,
 	}
@@ -99,9 +106,13 @@ func (u *userAPI) Login(c *gin.Context) {
 	})
 
 	response := gin.H{
-		"user_id": claims.Email,
+		"user_id": claims.UserId,
 		"message": "login success",
 	}
 
 	c.JSON(http.StatusOK, response)
+}
+
+func (u *userAPI) Logout(c *gin.Context) {
+	c.SetCookie("session_token", "", -1, "/", "", false, false)
 }

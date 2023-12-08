@@ -8,8 +8,8 @@ import (
 
 type DetectionRepository interface {
 	Store(DetectionResult *model.DetectedFish) error
-	GetList(email string) ([]model.DetectedFish, error)
-	GetByID(id string) (*model.DetectedFish, error)
+	GetList(userId string) ([]model.DetectedFish, error)
+	GetByID(id string, userId string) (*model.DetectedFish, error)
 }
 
 type detectionRepository struct {
@@ -28,11 +28,11 @@ func (d *detectionRepository) Store(DetectionResult *model.DetectedFish) error {
 	return nil
 }
 
-func (d *detectionRepository) GetList(email string) ([]model.DetectedFish, error) {
+func (d *detectionRepository) GetList(userId string) ([]model.DetectedFish, error) {
 	var detectedFish model.DetectedFish
 	var history = []model.DetectedFish{}
 
-	rows, err := d.db.Model(&detectedFish).Select("*").Where("email = ?", email).Rows()
+	rows, err := d.db.Model(&detectedFish).Select("*").Where("user_id = ?", userId).Rows()
 	if err != nil {
 		return history, err
 	}
@@ -45,10 +45,10 @@ func (d *detectionRepository) GetList(email string) ([]model.DetectedFish, error
 	return history, nil
 }
 
-func (d *detectionRepository) GetByID(id string) (*model.DetectedFish, error) {
+func (d *detectionRepository) GetByID(id string, userId string) (*model.DetectedFish, error) {
 	var detectionData model.DetectedFish
 
-	if err := d.db.Where("id = ?", id).First(&detectionData).Error; err != nil {
+	if err := d.db.Where("id = ? AND user_id = ?", id, userId).First(&detectionData).Error; err != nil {
 		return nil, err
 	}
 

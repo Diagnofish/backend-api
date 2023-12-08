@@ -7,12 +7,12 @@ import (
 type Session struct {
 	ID     int       `json:"id" gorm:"primaryKey"`
 	Token  string    `json:"token"`
-	Email  string    `json:"email"`
+	UserId string    `json:"user_id"`
 	Expiry time.Time `json:"expiry"`
 }
 
 type User struct {
-	ID        int       `json:"id" gorm:"primaryKey"`
+	ID        string    `json:"id" gorm:"primaryKey"`
 	Username  string    `json:"username" gorm:"type:varchar(255);not null"`
 	Email     string    `json:"email" gorm:"type:varchar(50);not null"`
 	Password  string    `json:"-" gorm:"type:varchar(255);not null"`
@@ -29,7 +29,7 @@ type DetectedFish struct {
 	Accuracy      float64   `json:"accuracy"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
-	Email         string    `json:"email"`
+	UserId        string    `json:"user_id"`
 }
 
 type DetectionClass struct {

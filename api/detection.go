@@ -31,7 +31,9 @@ func (d *detectionAPI) Detection(c *gin.Context) {
 
 	uuid := uuid.New()
 	id := uuid.String()[:8]
-	email, _ := c.Get("email")
+	userId, _ := c.Get("user_id")
+
+	fmt.Println(fmt.Sprintf("%v", userId))
 
 	file, err := c.FormFile("image")
 	if err != nil {
@@ -54,7 +56,7 @@ func (d *detectionAPI) Detection(c *gin.Context) {
 
 	var imageData = model.ImageData{
 		ID:            id,
-		FileOwner:     fmt.Sprintf("%v", email),
+		FileOwner:     fmt.Sprintf("%v", userId),
 		Filename:      filename,
 		FileDirectory: fileDirectory,
 	}
@@ -74,10 +76,10 @@ func (d *detectionAPI) Detection(c *gin.Context) {
 }
 
 func (d *detectionAPI) GetList(c *gin.Context) {
-	email, _ := c.Get("email")
-	emailStr := fmt.Sprintf("%v", email)
+	uuid, _ := c.Get("user_id")
+	userId := fmt.Sprintf("%v", uuid)
 
-	history, err := d.detectionService.GetList(emailStr)
+	history, err := d.detectionService.GetList(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.NewErrorResponse(err.Error()))
 		return
@@ -88,12 +90,14 @@ func (d *detectionAPI) GetList(c *gin.Context) {
 
 func (d *detectionAPI) GetByID(c *gin.Context) {
 	detectionID := c.Param("id")
+	uuid, _ := c.Get("user_id")
+	userId := fmt.Sprintf("%v", uuid)
 	// if err != nil {
 	// 	c.JSON(http.StatusBadRequest, model.NewErrorResponse("invalid task id"))
 	// 	return
 	// }
 
-	dataDetection, err := d.detectionService.GetByID(detectionID)
+	dataDetection, err := d.detectionService.GetByID(detectionID, userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.NewErrorResponse(err.Error()))
 	}

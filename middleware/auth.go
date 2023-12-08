@@ -34,7 +34,7 @@ func Auth() gin.HandlerFunc {
 		}
 
 		if claims, ok := token.Claims.(*model.Claims); ok && token.Valid {
-			c.Set("email", claims.Email)
+			c.Set("user_id", claims.UserId)
 		} else {
 			c.JSON(http.StatusUnauthorized, model.NewErrorResponse("unauthorized"))
 

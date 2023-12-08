@@ -12,8 +12,8 @@ import (
 type DetectionService interface {
 	Detection(imageData *model.ImageData) (model.DetectedFish, error)
 	StoreImage(imageData *model.ImageData, detectedFish *model.DetectedFish) error
-	GetList(email string) ([]model.DetectedFish, error)
-	GetByID(id string) (*model.DetectedFish, error)
+	GetList(userId string) ([]model.DetectedFish, error)
+	GetByID(id string, userId string) (*model.DetectedFish, error)
 }
 
 type detectionService struct {
@@ -45,7 +45,7 @@ func (d *detectionService) Detection(imageData *model.ImageData) (model.Detected
 
 	detectedFish.ID = imageData.ID
 	detectedFish.ImageFilename = imageData.Filename
-	detectedFish.Email = imageData.FileOwner
+	detectedFish.UserId = imageData.FileOwner
 
 	return detectedFish, nil
 }
@@ -93,8 +93,8 @@ func (d *detectionService) StoreImage(imageData *model.ImageData, detectedFish *
 	return nil
 }
 
-func (d *detectionService) GetList(email string) ([]model.DetectedFish, error) {
-	history, err := d.detectionRepository.GetList(email)
+func (d *detectionService) GetList(userId string) ([]model.DetectedFish, error) {
+	history, err := d.detectionRepository.GetList(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -102,8 +102,8 @@ func (d *detectionService) GetList(email string) ([]model.DetectedFish, error) {
 	return history, nil
 }
 
-func (d *detectionService) GetByID(id string) (*model.DetectedFish, error) {
-	detectionData, err := d.detectionRepository.GetByID(id)
+func (d *detectionService) GetByID(id string, userId string) (*model.DetectedFish, error) {
+	detectionData, err := d.detectionRepository.GetByID(id, userId)
 	if err != nil {
 		return nil, err
 	}

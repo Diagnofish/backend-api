@@ -24,11 +24,6 @@ func (r *userRepository) CreateUser(user model.User) (model.User, error) {
 		return user, result.Error
 	}
 
-	// err := r.db.Create(&user).Error
-	// if err != nil {
-	// 	return user, err
-	// }
-
 	return user, nil
 }
 

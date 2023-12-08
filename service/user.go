@@ -30,7 +30,7 @@ func (s *userService) Register(user *model.User) (model.User, error) {
 		return *user, err
 	}
 
-	if dbUser.Email != "" || dbUser.ID != 0 {
+	if dbUser.Email != "" || dbUser.ID != "" {
 		return *user, errors.New("email has already exists")
 	}
 
@@ -53,7 +53,7 @@ func (s *userService) Login(user *model.User) (token *string, err error) {
 		return nil, err
 	}
 
-	if dbUser.Email == "" || dbUser.ID == 0 {
+	if dbUser.Email == "" || dbUser.ID == "" {
 		return nil, errors.New("user not found")
 	}
 
@@ -63,7 +63,7 @@ func (s *userService) Login(user *model.User) (token *string, err error) {
 
 	expirationTime := time.Now().Add(200 * time.Minute)
 	claims := &model.Claims{
-		Email: dbUser.Email,
+		UserId: dbUser.ID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
@@ -77,11 +77,11 @@ func (s *userService) Login(user *model.User) (token *string, err error) {
 
 	session := model.Session{
 		Token:  tokenString,
-		Email:  user.Email,
+		UserId: user.ID,
 		Expiry: expirationTime,
 	}
 
-	_, err = s.sessionRepo.SessionAvailEmail(session.Email)
+	_, err = s.sessionRepo.SessionAvailUserId(session.UserId)
 	if err != nil {
 		err = s.sessionRepo.AddSession(session)
 	} else {

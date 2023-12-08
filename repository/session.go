@@ -11,7 +11,7 @@ type SessionRepository interface {
 	AddSession(session model.Session) error
 	DeleteSession(token string) error
 	UpdateSession(session model.Session) error
-	SessionAvailEmail(email string) (model.Session, error)
+	SessionAvailUserId(userId string) (model.Session, error)
 	SessionAvailToken(token string) (model.Session, error)
 	TokenExpired(session model.Session) bool
 }
@@ -43,11 +43,11 @@ func (s *sessionRepo) DeleteSession(token string) error {
 }
 
 func (s *sessionRepo) UpdateSession(session model.Session) error {
-	email := session.Email
+	id := session.ID
 
-	if err := s.db.Model(&session).Where("email = ?", email).Updates(map[string]interface{}{
+	if err := s.db.Model(&session).Where("id = ?", id).Updates(map[string]interface{}{
 		"token":  session.Token,
-		"email":  session.Email,
+		"id":     session.ID,
 		"expiry": session.Expiry,
 	}).Error; err != nil {
 		return err
@@ -56,10 +56,10 @@ func (s *sessionRepo) UpdateSession(session model.Session) error {
 	return nil
 }
 
-func (s *sessionRepo) SessionAvailEmail(email string) (model.Session, error) {
+func (s *sessionRepo) SessionAvailUserId(userId string) (model.Session, error) {
 	var session model.Session
 
-	if err := s.db.Where("email = ?", email).First(&session).Error; err != nil {
+	if err := s.db.Where("id = ?", userId).First(&session).Error; err != nil {
 		return model.Session{}, err
 	}
 

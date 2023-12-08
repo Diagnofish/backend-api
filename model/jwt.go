@@ -7,6 +7,6 @@ import (
 var JwtKey = []byte("secret-key")
 
 type Claims struct {
-	Email string `json:"email"`
+	UserId string `json:"user_id"`
 	jwt.RegisteredClaims
 }

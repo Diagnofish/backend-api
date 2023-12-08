@@ -80,6 +80,7 @@ func RunServer(db *gorm.DB, gin *gin.Engine) *gin.Engine {
 	{
 		user.POST("/register", apiHandler.UserAPIHandler.Register)
 		user.POST("/login", apiHandler.UserAPIHandler.Login)
+		user.POST("/logout", apiHandler.UserAPIHandler.Logout)
 	}
 
 	detection := gin.Group("/detection", middleware.Auth())
