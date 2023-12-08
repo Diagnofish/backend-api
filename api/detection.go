@@ -14,6 +14,8 @@ import (
 
 type DetectionAPI interface {
 	Detection(c *gin.Context)
+	GetList(c *gin.Context)
+	GetByID(c *gin.Context)
 }
 
 type detectionAPI struct {
@@ -24,8 +26,8 @@ func NewDetectionAPI(detectionService service.DetectionService) *detectionAPI {
 	return &detectionAPI{detectionService}
 }
 
-func (f *detectionAPI) Detection(c *gin.Context) {
-	var fishDetection model.FishDetection
+func (d *detectionAPI) Detection(c *gin.Context) {
+	var detectedFish model.DetectedFish
 
 	uuid := uuid.New()
 	id := uuid.String()[:8]
@@ -57,16 +59,44 @@ func (f *detectionAPI) Detection(c *gin.Context) {
 		FileDirectory: fileDirectory,
 	}
 
-	fishDetection, err = f.detectionService.Detection(&imageData)
+	detectedFish, err = d.detectionService.Detection(&imageData)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.NewErrorResponse(err.Error()))
 		return
 	}
 
-	if err = f.detectionService.StoreImage(&imageData, &fishDetection); err != nil {
+	if err = d.detectionService.StoreImage(&imageData, &detectedFish); err != nil {
 		c.JSON(http.StatusInternalServerError, model.NewErrorResponse(err.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, fishDetection)
+	c.JSON(http.StatusOK, detectedFish)
+}
+
+func (d *detectionAPI) GetList(c *gin.Context) {
+	email, _ := c.Get("email")
+	emailStr := fmt.Sprintf("%v", email)
+
+	history, err := d.detectionService.GetList(emailStr)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, model.NewErrorResponse(err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, history)
+}
+
+func (d *detectionAPI) GetByID(c *gin.Context) {
+	detectionID := c.Param("id")
+	// if err != nil {
+	// 	c.JSON(http.StatusBadRequest, model.NewErrorResponse("invalid task id"))
+	// 	return
+	// }
+
+	dataDetection, err := d.detectionService.GetByID(detectionID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, model.NewErrorResponse(err.Error()))
+	}
+
+	c.JSON(http.StatusOK, dataDetection)
 }

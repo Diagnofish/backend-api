@@ -20,7 +20,7 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type FishDetection struct {
+type DetectedFish struct {
 	ID            string    `json:"id" gorm:"PrimaryKey"`
 	ImageFilename string    `json:"image_link" gorm:"type:varchar(255)"`
 	FishName      string    `json:"fish_name" gorm:"type:varchar(50)"`

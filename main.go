@@ -49,7 +49,7 @@ func main() {
 		panic(err)
 	}
 
-	conn.AutoMigrate(&model.User{}, &model.FishDetection{}, &model.Session{})
+	conn.AutoMigrate(&model.User{}, &model.DetectedFish{}, &model.Session{})
 
 	router = RunServer(conn, router)
 
@@ -86,6 +86,8 @@ func RunServer(db *gorm.DB, gin *gin.Engine) *gin.Engine {
 	// detection := gin.Group("/fish")
 	{
 		detection.POST("", apiHandler.DetectionAPIHandler.Detection)
+		detection.GET("/history", apiHandler.DetectionAPIHandler.GetList)
+		detection.GET("/history/:id", apiHandler.DetectionAPIHandler.GetByID)
 	}
 
 	return gin

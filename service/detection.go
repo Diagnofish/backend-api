@@ -10,8 +10,10 @@ import (
 )
 
 type DetectionService interface {
-	Detection(imageData *model.ImageData) (model.FishDetection, error)
-	StoreImage(imageData *model.ImageData, fishDetection *model.FishDetection) error
+	Detection(imageData *model.ImageData) (model.DetectedFish, error)
+	StoreImage(imageData *model.ImageData, detectedFish *model.DetectedFish) error
+	GetList(email string) ([]model.DetectedFish, error)
+	GetByID(id string) (*model.DetectedFish, error)
 }
 
 type detectionService struct {
@@ -22,8 +24,8 @@ func NewDetectionService(detectionRepository repo.DetectionRepository) Detection
 	return &detectionService{detectionRepository}
 }
 
-func (d *detectionService) Detection(imageData *model.ImageData) (model.FishDetection, error) {
-	var fishDetection model.FishDetection
+func (d *detectionService) Detection(imageData *model.ImageData) (model.DetectedFish, error) {
+	var detectedFish model.DetectedFish
 
 	apiURL := "http://localhost:8000/detection"
 	client := resty.New()
@@ -31,28 +33,31 @@ func (d *detectionService) Detection(imageData *model.ImageData) (model.FishDete
 	// kirim file ke ML service
 	resp, err := client.R().SetFile("image", imageData.FileDirectory).Post(apiURL)
 	if err != nil {
-		return fishDetection, err
+		os.Remove(imageData.FileDirectory)
+		return detectedFish, err
 	}
 
-	err = json.Unmarshal(resp.Body(), &fishDetection)
+	err = json.Unmarshal(resp.Body(), &detectedFish)
 	if err != nil {
-		return fishDetection, err
+		os.Remove(imageData.FileDirectory)
+		return detectedFish, err
 	}
 
-	fishDetection.ID = imageData.ID
-	fishDetection.ImageFilename = imageData.Filename
-	fishDetection.Email = imageData.FileOwner
+	detectedFish.ID = imageData.ID
+	detectedFish.ImageFilename = imageData.Filename
+	detectedFish.Email = imageData.FileOwner
 
-	return fishDetection, nil
+	return detectedFish, nil
 }
 
-func (d *detectionService) StoreImage(imageData *model.ImageData, fishDetection *model.FishDetection) error {
+func (d *detectionService) StoreImage(imageData *model.ImageData, detectedFish *model.DetectedFish) error {
 	// bucketName := "testing-capstone-environment"
 
 	// ctx := context.Background()
 
 	// client, err := storage.NewClient(ctx)
 	// if err != nil {
+	// 	os.Remove(imageData.FileDirectory)
 	// 	return err
 	// }
 
@@ -64,6 +69,7 @@ func (d *detectionService) StoreImage(imageData *model.ImageData, fishDetection 
 	// file, err := os.Open(imageData.FileDirectory)
 	// if err != nil {
 	// 	// fmt.Printf("Failed to open file: %v", err)
+	// 	os.Remove(imageData.FileDirectory)
 	// 	return err
 	// }
 	// defer file.Close()
@@ -71,6 +77,7 @@ func (d *detectionService) StoreImage(imageData *model.ImageData, fishDetection 
 	// _, err = io.Copy(writer, file)
 	// if err != nil {
 	// 	// fmt.Printf("Failed to copy file to GCS: %v", err)
+	// 	os.Remove(imageData.FileDirectory)
 	// 	return err
 	// }
 
@@ -78,10 +85,28 @@ func (d *detectionService) StoreImage(imageData *model.ImageData, fishDetection 
 		return err
 	}
 
-	err := d.detectionRepository.Store(fishDetection)
+	err := d.detectionRepository.Store(detectedFish)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (d *detectionService) GetList(email string) ([]model.DetectedFish, error) {
+	history, err := d.detectionRepository.GetList(email)
+	if err != nil {
+		return nil, err
+	}
+
+	return history, nil
+}
+
+func (d *detectionService) GetByID(id string) (*model.DetectedFish, error) {
+	detectionData, err := d.detectionRepository.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return detectionData, nil
 }
