@@ -15,8 +15,8 @@ import (
 )
 
 type APIHandler struct {
-	UserAPIHandler api.UserAPI
-	FishAPIHandler api.FishAPI
+	UserAPIHandler      api.UserAPI
+	DetectionAPIHandler api.DetectionAPI
 }
 
 func main() {
@@ -63,17 +63,17 @@ func main() {
 func RunServer(db *gorm.DB, gin *gin.Engine) *gin.Engine {
 	userRepo := repo.NewUserRepo(db)
 	sessionRepo := repo.NewSessionRepo(db)
-	fishRepo := repo.NewFishRepo(db)
+	detectionRepo := repo.NewFishRepo(db)
 
 	userService := service.NewUserService(userRepo, sessionRepo)
-	fishService := service.NewFishService(fishRepo)
+	detectionService := service.NewDetectionService(detectionRepo)
 
 	userAPIHandler := api.NewUserAPI(userService)
-	fishAPIHandler := api.NewFishAPI(fishService)
+	detectionAPIHandler := api.NewDetectionAPI(detectionService)
 
 	apiHandler := APIHandler{
-		UserAPIHandler: userAPIHandler,
-		FishAPIHandler: fishAPIHandler,
+		UserAPIHandler:      userAPIHandler,
+		DetectionAPIHandler: detectionAPIHandler,
 	}
 
 	user := gin.Group("/user")
@@ -82,10 +82,10 @@ func RunServer(db *gorm.DB, gin *gin.Engine) *gin.Engine {
 		user.POST("/login", apiHandler.UserAPIHandler.Login)
 	}
 
-	detection := gin.Group("/fish", middleware.Auth())
+	detection := gin.Group("/detection", middleware.Auth())
 	// detection := gin.Group("/fish")
 	{
-		detection.POST("/detection", apiHandler.FishAPIHandler.Detection)
+		detection.POST("", apiHandler.DetectionAPIHandler.Detection)
 	}
 
 	return gin

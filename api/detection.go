@@ -12,19 +12,19 @@ import (
 	"github.com/google/uuid"
 )
 
-type FishAPI interface {
+type DetectionAPI interface {
 	Detection(c *gin.Context)
 }
 
-type fishAPI struct {
-	fishService service.FishService
+type detectionAPI struct {
+	detectionService service.DetectionService
 }
 
-func NewFishAPI(fishService service.FishService) *fishAPI {
-	return &fishAPI{fishService}
+func NewDetectionAPI(detectionService service.DetectionService) *detectionAPI {
+	return &detectionAPI{detectionService}
 }
 
-func (f *fishAPI) Detection(c *gin.Context) {
+func (f *detectionAPI) Detection(c *gin.Context) {
 	var fishDetection model.FishDetection
 
 	uuid := uuid.New()
@@ -57,13 +57,13 @@ func (f *fishAPI) Detection(c *gin.Context) {
 		FileDirectory: fileDirectory,
 	}
 
-	fishDetection, err = f.fishService.Detection(&imageData)
+	fishDetection, err = f.detectionService.Detection(&imageData)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model.NewErrorResponse(err.Error()))
 		return
 	}
 
-	if err = f.fishService.StoreImage(&imageData, &fishDetection); err != nil {
+	if err = f.detectionService.StoreImage(&imageData, &fishDetection); err != nil {
 		c.JSON(http.StatusInternalServerError, model.NewErrorResponse(err.Error()))
 		return
 	}

@@ -12,12 +12,7 @@ func Auth() gin.HandlerFunc {
 	return gin.HandlerFunc(func(c *gin.Context) {
 		cookie, err := c.Request.Cookie("session_token")
 		if err != nil {
-			if c.GetHeader("Content-Type") == "application/json" {
-				c.JSON(http.StatusUnauthorized, model.NewErrorResponse("unauthorized"))
-			} else {
-				c.JSON(http.StatusUnauthorized, model.NewErrorResponse("unauthorized"))
-				c.Redirect(http.StatusSeeOther, "/user/login")
-			}
+			c.JSON(http.StatusUnauthorized, model.NewErrorResponse("unauthorized"))
 		}
 
 		tokenStr := cookie.Value

@@ -9,20 +9,20 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-type FishService interface {
+type DetectionService interface {
 	Detection(imageData *model.ImageData) (model.FishDetection, error)
 	StoreImage(imageData *model.ImageData, fishDetection *model.FishDetection) error
 }
 
-type fishService struct {
-	fishRepository repo.FishRepository
+type detectionService struct {
+	detectionRepository repo.DetectionRepository
 }
 
-func NewFishService(fishRepository repo.FishRepository) FishService {
-	return &fishService{fishRepository}
+func NewDetectionService(detectionRepository repo.DetectionRepository) DetectionService {
+	return &detectionService{detectionRepository}
 }
 
-func (f *fishService) Detection(imageData *model.ImageData) (model.FishDetection, error) {
+func (d *detectionService) Detection(imageData *model.ImageData) (model.FishDetection, error) {
 	var fishDetection model.FishDetection
 
 	apiURL := "http://localhost:8000/detection"
@@ -46,7 +46,7 @@ func (f *fishService) Detection(imageData *model.ImageData) (model.FishDetection
 	return fishDetection, nil
 }
 
-func (f *fishService) StoreImage(imageData *model.ImageData, fishDetection *model.FishDetection) error {
+func (d *detectionService) StoreImage(imageData *model.ImageData, fishDetection *model.FishDetection) error {
 	// bucketName := "testing-capstone-environment"
 
 	// ctx := context.Background()
@@ -78,7 +78,7 @@ func (f *fishService) StoreImage(imageData *model.ImageData, fishDetection *mode
 		return err
 	}
 
-	err := f.fishRepository.Store(fishDetection)
+	err := d.detectionRepository.Store(fishDetection)
 	if err != nil {
 		return err
 	}
