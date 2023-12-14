@@ -7,8 +7,8 @@ import (
 	"diagnofish/model"
 	repo "diagnofish/repository"
 	"diagnofish/service"
-
 	"fmt"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -22,42 +22,44 @@ type APIHandler struct {
 func main() {
 	gin.SetMode(gin.DebugMode)
 
-	router := gin.Default()
-	db := db.NewDB()
+	wg := sync.WaitGroup{}
 
-	// router.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
-	// 	return fmt.Sprintf("[%s] \"%s %s %s\"\n",
-	// 		param.TimeStamp.Format(time.RFC822),
-	// 		param.Method,
-	// 		param.Path,
-	// 		param.ErrorMessage,
-	// 	)
-	// }))
-	router.Use(gin.Recovery())
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 
-	dbCredential := model.Credential{
-		Host:         "localhost",
-		Username:     "postgres",
-		Password:     "123",
-		DatabaseName: "diagnofish",
-		Port:         5432,
-		Schema:       "public",
-	}
+		router := gin.Default()
+		db := db.NewDB()
 
-	conn, err := db.Connect(&dbCredential)
-	if err != nil {
-		panic(err)
-	}
+		router.Use(gin.Recovery())
 
-	conn.AutoMigrate(&model.User{}, &model.DetectedFish{}, &model.Session{})
+		dbCredential := model.Credential{
+			Host:         "localhost",
+			Username:     "postgres",
+			Password:     "123",
+			DatabaseName: "diagnofish",
+			Port:         5432,
+			Schema:       "public",
+		}
 
-	router = RunServer(conn, router)
+		conn, err := db.Connect(&dbCredential)
+		if err != nil {
+			panic(err)
+		}
 
-	fmt.Println("Server is running on port 8080")
-	err = router.Run(":8080")
-	if err != nil {
-		panic(err)
-	}
+		conn.AutoMigrate(&model.User{}, &model.DetectedFish{}, &model.Session{})
+
+		router = RunServer(conn, router)
+
+		fmt.Println("Server is running on port 8080")
+		err = router.Run(":8080")
+		if err != nil {
+			panic(err)
+		}
+
+	}()
+
+	wg.Wait()
 }
 
 func RunServer(db *gorm.DB, gin *gin.Engine) *gin.Engine {
