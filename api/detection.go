@@ -46,6 +46,22 @@ func (d *detectionAPI) Detection(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, model.NewErrorResponse("failed to get directory"))
 	}
 
+	allowedExtensions := []string{".jpg", ".jpeg", ".png"}
+	ext := filepath.Ext(file.Filename)
+
+	validExtension := false
+	for _, allowedExt := range allowedExtensions {
+		if ext == allowedExt {
+			validExtension = true
+			break
+		}
+	}
+
+	if !validExtension {
+		c.JSON(http.StatusBadRequest, model.NewErrorResponse("only image files (jpg, jpeg, png) are allowed"))
+		return
+	}
+
 	filename := fmt.Sprintf("%s%s", id, filepath.Ext(file.Filename))
 	fileDirectory := filepath.Join(dir, "images", filename)
 
