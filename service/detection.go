@@ -13,7 +13,7 @@ type DetectionService interface {
 	Detection(imageData *model.ImageData) (model.DetectedFish, error)
 	StoreImage(imageData *model.ImageData, detectedFish *model.DetectedFish) error
 	GetList(userId string) ([]model.DetectedFish, error)
-	GetByID(id string, userId string) (*model.DetectedFish, error)
+	GetByID(id string, userId string) (*model.DetectionDetail, error)
 }
 
 type detectionService struct {
@@ -27,7 +27,7 @@ func NewDetectionService(detectionRepository repo.DetectionRepository) Detection
 func (d *detectionService) Detection(imageData *model.ImageData) (model.DetectedFish, error) {
 	var detectedFish model.DetectedFish
 
-	apiURL := "http://localhost:8000/detection"
+	apiURL := "http://127.0.0.1:5000/detection"
 	client := resty.New()
 
 	// kirim file ke ML service
@@ -102,11 +102,11 @@ func (d *detectionService) GetList(userId string) ([]model.DetectedFish, error) 
 	return history, nil
 }
 
-func (d *detectionService) GetByID(id string, userId string) (*model.DetectedFish, error) {
-	detectionData, err := d.detectionRepository.GetByID(id, userId)
+func (d *detectionService) GetByID(id string, userId string) (*model.DetectionDetail, error) {
+	detectionDetail, err := d.detectionRepository.GetByID(id, userId)
 	if err != nil {
 		return nil, err
 	}
 
-	return detectionData, nil
+	return detectionDetail, nil
 }

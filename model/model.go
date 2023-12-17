@@ -21,24 +21,28 @@ type User struct {
 }
 
 type DetectedFish struct {
-	ID            string    `json:"id" gorm:"PrimaryKey"`
-	ImageFilename string    `json:"image_link" gorm:"type:varchar(255)"`
-	FishName      string    `json:"fish_name" gorm:"type:varchar(50)"`
-	IsSuccess     bool      `json:"is_success"`
-	Result        string    `json:"result"`
-	Accuracy      float64   `json:"accuracy"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
-	UserId        string    `json:"user_id"`
+	ID              string    `json:"id" gorm:"PrimaryKey"`
+	ImageFilename   string    `json:"image_filename" gorm:"type:varchar(255)"`
+	FishName        string    `json:"fish_name" gorm:"type:varchar(50)"`
+	IsSuccess       bool      `json:"is_success"`
+	Result          string    `json:"result"`
+	ConfidenceScore float64   `json:"confidence_score"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
+	UserId          string    `json:"user_id"`
 }
 
-type DetectionClass struct {
-	ID          int    `json:"id" gorm:"PrimaryKey"`
-	Result      string `json:"result" gorm:"type:varchar(50)"`
-	StatusShown string `json:"status_shown" gorm:"type:varchar(50)"`
-	Description string `json:"description" gorm:"type:text"`
-	Treatment   string `json:"treatment" gorm:"type:text"`
-	Prevention  string `json:"prevention" gorm:"type:text"`
+type DetectionDetail struct {
+	ID              string  `json:"id"`
+	ImageFilename   string  `json:"image_filename"`
+	FishName        string  `json:"fish_name"`
+	Result          string  `json:"result"`
+	ConfidenceScore float64 `json:"confidence_score"`
+	Description     string  `json:"description"`
+	Symptom         string  `json:"symptom"`
+	Cause           string  `json:"cause"`
+	Treatment       string  `json:"treatment"`
+	Prevention      string  `json:"prevention"`
 }
 
 type UserRegister struct {
