@@ -60,12 +60,4 @@ func (d *detectionRepository) GetByID(id string, userId string) (*model.Detectio
 	}
 
 	return &detectionDetail, nil
-
-	// var detectionData model.DetectedFish
-
-	// if err := d.db.Where("id = ? AND user_id = ?", id, userId).First(&detectionData).Error; err != nil {
-	// 	return nil, err
-	// }
-
-	// return &detectionData, nil
 }
