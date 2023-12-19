@@ -1,11 +1,14 @@
 package service
 
 import (
+	"context"
 	"diagnofish/model"
 	repo "diagnofish/repository"
 	"encoding/json"
+	"io"
 	"os"
 
+	"cloud.google.com/go/storage"
 	"github.com/go-resty/resty/v2"
 )
 
@@ -27,7 +30,7 @@ func NewDetectionService(detectionRepository repo.DetectionRepository) Detection
 func (d *detectionService) Detection(imageData *model.ImageData) (model.DetectedFish, error) {
 	var detectedFish model.DetectedFish
 
-	apiURL := "http://127.0.0.1:5000/detection"
+	apiURL := "https://prediction-api-hnobhrzdiq-et.a.run.app/detection"
 	client := resty.New()
 
 	// kirim file ke ML service
@@ -51,41 +54,41 @@ func (d *detectionService) Detection(imageData *model.ImageData) (model.Detected
 }
 
 func (d *detectionService) StoreImage(imageData *model.ImageData, detectedFish *model.DetectedFish) error {
-	// bucketName := "testing-capstone-environment"
+	bucketName := "diagnofish-bucket"
 
-	// ctx := context.Background()
+	ctx := context.Background()
 
-	// client, err := storage.NewClient(ctx)
-	// if err != nil {
-	// 	os.Remove(imageData.FileDirectory)
-	// 	return err
-	// }
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		os.Remove(imageData.FileDirectory)
+		return err
+	}
 
-	// bucket := client.Bucket(bucketName)
-	// object := bucket.Object(imageData.Filename)
-	// writer := object.NewWriter(ctx)
-	// defer writer.Close()
+	bucket := client.Bucket(bucketName)
+	object := bucket.Object("Fish Detection Image/" + imageData.Filename)
+	writer := object.NewWriter(ctx)
+	defer writer.Close()
 
-	// file, err := os.Open(imageData.FileDirectory)
-	// if err != nil {
-	// 	// fmt.Printf("Failed to open file: %v", err)
-	// 	os.Remove(imageData.FileDirectory)
-	// 	return err
-	// }
-	// defer file.Close()
+	file, err := os.Open(imageData.FileDirectory)
+	if err != nil {
+		// fmt.Printf("Failed to open file: %v", err)
+		os.Remove(imageData.FileDirectory)
+		return err
+	}
+	defer file.Close()
 
-	// _, err = io.Copy(writer, file)
-	// if err != nil {
-	// 	// fmt.Printf("Failed to copy file to GCS: %v", err)
-	// 	os.Remove(imageData.FileDirectory)
-	// 	return err
-	// }
+	_, err = io.Copy(writer, file)
+	if err != nil {
+		// fmt.Printf("Failed to copy file to GCS: %v", err)
+		os.Remove(imageData.FileDirectory)
+		return err
+	}
 
 	if err := os.Remove(imageData.FileDirectory); err != nil {
 		return err
 	}
 
-	err := d.detectionRepository.Store(detectedFish)
+	err = d.detectionRepository.Store(detectedFish)
 	if err != nil {
 		return err
 	}

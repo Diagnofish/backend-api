@@ -1,4 +1,4 @@
-CREATE TABLE detection_detail (
+CREATE TABLE class_details (
   id SERIAL PRIMARY KEY,
   result VARCHAR(50) NOT NULL,
   description TEXT,
@@ -8,7 +8,7 @@ CREATE TABLE detection_detail (
   prevention TEXT
 );
 
-INSERT INTO detection_detail (result, description, symptom, cause, treatment, prevention)
+INSERT INTO class_details (result, description, symptom, cause, treatment, prevention)
 VALUES
 (
   'Bacterial Diseases - Aeromoniasis',
