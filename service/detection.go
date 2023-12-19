@@ -65,7 +65,7 @@ func (d *detectionService) StoreImage(imageData *model.ImageData, detectedFish *
 	}
 
 	bucket := client.Bucket(bucketName)
-	object := bucket.Object("Fish Detection Image/" + imageData.Filename)
+	object := bucket.Object("fish-images/" + imageData.Filename)
 	writer := object.NewWriter(ctx)
 	defer writer.Close()
 
