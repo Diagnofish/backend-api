@@ -61,7 +61,7 @@ func (s *userService) Login(user *model.User) (token *string, err error) {
 		return nil, errors.New("wrong email or password")
 	}
 
-	expirationTime := time.Now().Add(200 * time.Minute)
+	expirationTime := time.Now().Add(48 * time.Hour)
 	claims := &model.Claims{
 		UserId: dbUser.ID,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -77,7 +77,7 @@ func (s *userService) Login(user *model.User) (token *string, err error) {
 
 	session := model.Session{
 		Token:  tokenString,
-		UserId: user.ID,
+		UserId: dbUser.ID,
 		Expiry: expirationTime,
 	}
 
@@ -86,6 +86,9 @@ func (s *userService) Login(user *model.User) (token *string, err error) {
 		err = s.sessionRepo.AddSession(session)
 	} else {
 		err = s.sessionRepo.UpdateSession(session)
+	}
+	if err != nil {
+		return nil, err
 	}
 
 	return &tokenString, nil

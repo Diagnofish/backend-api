@@ -43,12 +43,12 @@ func (s *sessionRepo) DeleteSession(token string) error {
 }
 
 func (s *sessionRepo) UpdateSession(session model.Session) error {
-	id := session.ID
+	userId := session.UserId
 
-	if err := s.db.Model(&session).Where("id = ?", id).Updates(map[string]interface{}{
-		"token":  session.Token,
-		"id":     session.ID,
-		"expiry": session.Expiry,
+	if err := s.db.Model(&session).Where("user_id = ?", userId).Updates(map[string]interface{}{
+		"token":   session.Token,
+		"user_id": session.UserId,
+		"expiry":  session.Expiry,
 	}).Error; err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func (s *sessionRepo) UpdateSession(session model.Session) error {
 func (s *sessionRepo) SessionAvailUserId(userId string) (model.Session, error) {
 	var session model.Session
 
-	if err := s.db.Where("id = ?", userId).First(&session).Error; err != nil {
+	if err := s.db.Where("user_id = ?", userId).First(&session).Error; err != nil {
 		return model.Session{}, err
 	}
 
