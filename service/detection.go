@@ -54,7 +54,7 @@ func (d *detectionService) Detection(imageData *model.ImageData) (model.Detected
 }
 
 func (d *detectionService) StoreImage(imageData *model.ImageData, detectedFish *model.DetectedFish) error {
-	bucketName := "diagnofish-bucket"
+	bucketName := "diagnofish"
 
 	ctx := context.Background()
 
@@ -65,7 +65,7 @@ func (d *detectionService) StoreImage(imageData *model.ImageData, detectedFish *
 	}
 
 	bucket := client.Bucket(bucketName)
-	object := bucket.Object("fish-images/" + imageData.Filename)
+	object := bucket.Object("detection-images/" + imageData.Filename)
 	writer := object.NewWriter(ctx)
 	defer writer.Close()
 
