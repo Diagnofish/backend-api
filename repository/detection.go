@@ -32,7 +32,7 @@ func (d *detectionRepository) GetList(userId string) ([]model.DetectedFish, erro
 	var detectedFish model.DetectedFish
 	var history = []model.DetectedFish{}
 
-	rows, err := d.db.Model(&detectedFish).Select("*").Where("user_id = ?", userId).Rows()
+	rows, err := d.db.Model(&detectedFish).Select("*").Where("user_id = ?", userId).Order("created_at desc").Rows()
 	if err != nil {
 		return history, err
 	}
