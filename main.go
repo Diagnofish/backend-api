@@ -20,7 +20,7 @@ type APIHandler struct {
 }
 
 func main() {
-	gin.SetMode(gin.DebugMode)
+	gin.SetMode(gin.ReleaseMode)
 
 	wg := sync.WaitGroup{}
 
