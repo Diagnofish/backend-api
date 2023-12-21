@@ -24,15 +24,19 @@ for more complete documentation on available endpoints, please check here. [Diag
 ## Folder Structures
 
 📁 **repository**
+
 This is a function that interacts with the Postgres database using GORM
 
 📁 **service**
+
 The service layer is used to process data according to predefined business rules.
 
 📁 **middleware**
+
 In the `middleware/auth.go` file there is an `Auth()` function that is used to authenticate users using JWT (JSON Web Token). This middleware serves to check whether a user who accesses a certain endpoint or route has been authenticated or not.
 
 📁 **api**
+
 Contains the HTTP handler for the API
 
 ## How to Deploy to Cloud Run
