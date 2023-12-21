@@ -34,10 +34,10 @@ func main() {
 		router.Use(gin.Recovery())
 
 		dbCredential := model.Credential{
-			Host:         "35.198.233.55",
-			Username:     "postgres",
-			Password:     "db_diagnofish",
-			DatabaseName: "diagnofish_db",
+			Host:         "",
+			Username:     "",
+			Password:     "",
+			DatabaseName: "",
 			Port:         5432,
 			Schema:       "public",
 		}
