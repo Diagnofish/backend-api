@@ -41,8 +41,8 @@ Contains the HTTP handler for the API
 
 #### How to Deploy to Cloud Run
 
-2. Select **Create service** on Cloud Run
-3. Select **Continuously deploy new revisions from a source repository**
-4. Select **Set up with Cloud Build**
-5. Choose this repository
-6. Select **Create**
+1. Select **Create service** on Cloud Run
+2. Select **Continuously deploy new revisions from a source repository**
+3. Select **Set up with Cloud Build**
+4. Choose this repository
+5. Select **Create**
