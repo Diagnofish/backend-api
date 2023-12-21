@@ -4,9 +4,8 @@
 
 Diagnofish is an application that enables fish disease detection through images sent by users. The images sent by users will be processed by machine learning, and the detection results will be used to determine what kind of disease is attacking, how to treat it, and how to prevent it.
 
-This API uses a **PostgreSQL** database to store user data and detection result data.
-
-This API uses buckets in **Cloud Storage** to store the required files.
+- This API uses a **PostgreSQL** database to store user data and detection result data.
+- This API uses buckets in **Cloud Storage** to store the required files.
 
 ## Endpoints 
 
